@@ -50,7 +50,7 @@ class Hparams:
         self.encoder_embedding_dim = 512
 
         # Decoder parameters
-        self.n_frames_per_step = 1  # currently only 1 is supported
+        self.n_frames_per_step = 3
         self.decoder_rnn_dim = 1024
         self.prenet_dim = 256
         self.max_decoder_steps = 1000

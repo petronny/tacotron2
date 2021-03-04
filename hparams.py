@@ -75,7 +75,7 @@ class Hparams:
         # Optimization Hyperparameters #
         ################################
         self.use_saved_learning_rate = False
-        self.learning_rate = 1e-5
+        self.learning_rate = 1e-3
         self.weight_decay = 1e-6
         self.grad_clip_thresh = 1.0
         self.batch_size = 32

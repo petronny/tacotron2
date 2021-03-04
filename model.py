@@ -28,7 +28,7 @@ class LocationLayer(nn.Module):
 
 class Attention(nn.Module):
     def __init__(self, attention_rnn_dim, embedding_dim, attention_dim,
-                 attention_location_n_filters, attention_location_kernel_size):
+                 attention_location_n_filters, attention_location_kernel_size, prune_rate=0):
         super(Attention, self).__init__()
         self.query_layer = LinearNorm(attention_rnn_dim, attention_dim,
                                       bias=False, w_init_gain='tanh')
@@ -39,6 +39,8 @@ class Attention(nn.Module):
                                             attention_location_kernel_size,
                                             attention_dim)
         self.score_mask_value = -float("inf")
+        self.prune_rate = prune_rate
+
 
     def get_alignment_energies(self, query, processed_memory,
                                attention_weights_cat):
@@ -80,6 +82,22 @@ class Attention(nn.Module):
             alignment.data.masked_fill_(mask, self.score_mask_value)
 
         attention_weights = F.softmax(alignment, dim=1)
+
+        if self.prune_rate > 0:
+            if self.prune_rate < 0.5:
+                _, indices = torch.topk(attention_weights, int(attention_weights.size(1) * self.prune_rate), largest=False)
+                prune_mask = torch.ones(attention_weights.size()).cuda()
+                prune_mask = prune_mask.scatter(1, indices, 0)
+            else:
+                _, indices = torch.topk(attention_weights, int(attention_weights.size(1) * (1 - self.prune_rate)))
+                prune_mask = torch.zeros(attention_weights.size()).cuda()
+                prune_mask = prune_mask.scatter(1, indices, 1)
+            prune_mask = prune_mask.detach()
+            attention_weights = prune_mask * attention_weights
+            weight_sums = torch.sum(attention_weights, 1).repeat((attention_weights.size(1), 1)).permute(1, 0)
+            weight_sums = weight_sums.detach()
+            attention_weights = attention_weights / weight_sums
+
         attention_context = torch.bmm(attention_weights.unsqueeze(1), memory)
         attention_context = attention_context.squeeze(1)
 
@@ -226,7 +244,7 @@ class Decoder(nn.Module):
         self.attention_layer = Attention(
             hparams.attention_rnn_dim, hparams.encoder_embedding_dim,
             hparams.attention_dim, hparams.attention_location_n_filters,
-            hparams.attention_location_kernel_size)
+            hparams.attention_location_kernel_size, hparams.attention_prune_rate)
 
         self.decoder_rnn = nn.LSTMCell(
             hparams.attention_rnn_dim + hparams.encoder_embedding_dim,

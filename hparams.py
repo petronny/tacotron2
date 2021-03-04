@@ -66,6 +66,9 @@ class Hparams:
         self.attention_location_n_filters = 32
         self.attention_location_kernel_size = 31
 
+        # Attention prune rate
+        self.attention_prune_rate = 0.4
+
         # Mel-post processing network parameters
         self.postnet_embedding_dim = 512
         self.postnet_kernel_size = 5

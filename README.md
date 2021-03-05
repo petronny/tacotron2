@@ -30,18 +30,18 @@ Visit our [website] for audio samples using our published [Tacotron 2] and
     - Install python requirements: `pip install -r requirements.txt`
 
 ## Training
-1. `python train.py --output_directory=outdir --log_directory=logdir`
-2. (OPTIONAL) `tensorboard --logdir=outdir/logdir`
+1. `python train.py --output_directory=save --log_directory=your_tag_for_this_run`
+2. (OPTIONAL) `tensorboard --logdir=save`
 
 ## Training using a pre-trained model
 Training using a pre-trained model can lead to faster convergence  
 By default, the dataset dependent text embedding layers are [ignored]
 
 1. Download our published [Tacotron 2] model
-2. `python train.py --output_directory=outdir --log_directory=logdir -c tacotron2_statedict.pt --warm_start`
+2. `python train.py --output_directory=save --log_directory=your_tag_for_this_run -c tacotron2_statedict.pt --warm_start`
 
 ## Multi-GPU (distributed) and Automatic Mixed Precision Training
-1. `python -m multiproc train.py --output_directory=outdir --log_directory=logdir --hparams=distributed_run=True,fp16_run=True`
+1. `python -m multiproc train.py --output_directory=save --log_directory=your_tag_for_this_run --hparams=distributed_run=True,fp16_run=True`
 
 ## Inference demo
 1. Download our published [Tacotron 2] model

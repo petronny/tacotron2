@@ -2,6 +2,7 @@ import os
 import time
 import argparse
 import math
+from datetime import datetime
 from numpy import finfo
 
 import torch
@@ -180,6 +181,10 @@ def train(output_directory, log_directory, checkpoint_path, warm_start, n_gpus,
 
     criterion = Tacotron2Loss()
 
+    if log_directory is None:
+        log_directory = ''
+    log_directory += datetime.now().strftime("-%Y%m%d-%H%M%S")
+
     logger = prepare_directories_and_logger(
         output_directory, log_directory, rank)
 
@@ -248,7 +253,7 @@ def train(output_directory, log_directory, checkpoint_path, warm_start, n_gpus,
                          hparams.distributed_run, rank)
                 if rank == 0:
                     checkpoint_path = os.path.join(
-                        output_directory, "checkpoint_{}".format(iteration))
+                        output_directory, log_directory, "checkpoint_{}".format(iteration))
                     save_checkpoint(model, optimizer, learning_rate, iteration,
                                     checkpoint_path)
 

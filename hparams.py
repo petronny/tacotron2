@@ -79,3 +79,20 @@ class Hparams:
     grad_clip_thresh = 1.0
     batch_size = 16
     mask_padding = True  # set model's padded outputs to padded values
+
+    class AuxiliaryEncoder:
+        input_dim = 768 + 6
+
+        class Prenet:
+            sizes = [256, 128]
+
+        class CBHG:
+            dim = 128
+            K = 16
+            projections=[128, 128]
+
+    class ContextEncoder:
+        input_dim = 768 + 1
+        linear1_dim = 64
+        gru_dim = 64
+        linear2_dim = 512

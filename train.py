@@ -15,7 +15,7 @@ from model import Tacotron2
 from data_utils import TextMelLoader, TextMelCollate
 from loss_function import Tacotron2Loss
 from logger import Tacotron2Logger
-from hparams import create_hparams
+from hparams import Hparams as hparams
 
 
 def reduce_tensor(tensor, n_gpus):
@@ -278,7 +278,6 @@ if __name__ == '__main__':
                         required=False, help='Distributed group name')
 
     args = parser.parse_args()
-    hparams = create_hparams()
 
     torch.backends.cudnn.enabled = hparams.cudnn_enabled
     torch.backends.cudnn.benchmark = hparams.cudnn_benchmark
